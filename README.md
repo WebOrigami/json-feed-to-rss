@@ -28,3 +28,4 @@ An optional second parameter can supply the following options:
 
 - `feed_url`: the public URL where the RSS feed lives
 - `language`: a [language tag](https://en.wikipedia.org/wiki/IETF_language_tag) identifying the language of the feed content
+- `stylesheet`: an [XSLT stylesheet](https://developer.mozilla.org/en-US/docs/Web/XML/XSLT) that can process the XML feed data into a more human-readable form

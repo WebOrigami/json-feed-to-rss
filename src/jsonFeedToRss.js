@@ -7,7 +7,7 @@
 export default function jsonFeedToRss(jsonFeed, options = {}) {
   const { description, home_page_url, items, title } = jsonFeed;
 
-  let { feed_url, language } = options;
+  let { feed_url, language, stylesheet } = options;
   if (!feed_url && jsonFeed.feed_url) {
     // Presume that the RSS feed lives in same location as feed_url
     // but with a .xml extension.
@@ -19,6 +19,9 @@ export default function jsonFeedToRss(jsonFeed, options = {}) {
 
   const itemsRss = items?.map((story) => itemRss(story)).join("") ?? [];
 
+  const stylesheetElement = stylesheet
+    ? `<?xml-stylesheet href="${stylesheet}" type="text/xsl"?>\n`
+    : "";
   const titleElement = title ? `    <title>${escapeXml(title)}</title>\n` : "";
   const descriptionElement = description
     ? `    <description>${escapeXml(description)}</description>\n`
@@ -32,7 +35,7 @@ export default function jsonFeedToRss(jsonFeed, options = {}) {
   const feedLinkElement = `    <atom:link href="${feed_url}" rel="self" type="application/rss+xml"/>\n`;
 
   return `<?xml version="1.0" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+${stylesheetElement}<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
 ${titleElement}${descriptionElement}${linkElement}${languageElement}${feedLinkElement}${itemsRss}  </channel>
 </rss>`;
