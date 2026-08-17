@@ -39,7 +39,7 @@ ${titleElement}${descriptionElement}${linkElement}${languageElement}${feedLinkEl
 }
 
 function itemRss(jsonFeedItem) {
-  const { content_html, external_url, id, summary, title, url } = jsonFeedItem;
+  const { content_html, id, summary, title, url } = jsonFeedItem;
   let { date_published } = jsonFeedItem;
   if (typeof date_published === "string") {
     // Parse as ISO 8601 date.
@@ -64,12 +64,9 @@ function itemRss(jsonFeedItem) {
     ? `      <title>${escapeXml(title)}</title>\n`
     : "";
   const linkElement = url ? `      <link>${url}</link>\n` : "";
-  const sourceElement = external_url
-    ? `      <source url="${external_url}"></source>\n`
-    : "";
 
   return `    <item>
-${dateElement}${titleElement}${linkElement}${guidElement}${descriptionElement}${sourceElement}${contentElement}    </item>
+${dateElement}${titleElement}${linkElement}${guidElement}${descriptionElement}${contentElement}    </item>
 `;
 }
 
