@@ -3,6 +3,23 @@ import { describe, test } from "node:test";
 import jsonFeedToRss from "../src/jsonFeedToRss.js";
 
 describe("jsonFeedToRss", () => {
+  test("throws for invalid dates", () => {
+    const jsonFeed = {
+      title: "Test Feed",
+      items: [
+        {
+          id: "1",
+          date_published: "not a date",
+          title: "Test Item",
+        },
+      ],
+    };
+
+    assert.throws(() => jsonFeedToRss(jsonFeed), {
+      message: /Invalid date_published/,
+    });
+  });
+
   test("throws for XML-invalid characters", () => {
     const jsonFeed = {
       title: "Test\u000B Feed",

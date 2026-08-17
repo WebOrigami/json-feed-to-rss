@@ -47,14 +47,16 @@ ${titleElement}${descriptionElement}${linkElement}${languageElement}${feedLinkEl
 }
 
 function itemRss(jsonFeedItem) {
-  const { content_html, date_published, id, summary, title, url } =
-    jsonFeedItem;
+  const { content_html, id, summary, title, url } = jsonFeedItem;
+  let { date_published } = jsonFeedItem;
+
   validateXmlCharacters(content_html);
   validateXmlCharacters(id);
   validateXmlCharacters(summary);
   validateXmlCharacters(title);
   validateXmlCharacters(url);
   validateXmlCharacters(date_published);
+  validateDate(date_published);
 
   if (typeof date_published === "string") {
     // Parse as ISO 8601 date.
@@ -128,6 +130,16 @@ function toRFC822Date(date) {
   const minutes = date.getUTCMinutes().toString().padStart(2, "0");
   const seconds = date.getUTCSeconds().toString().padStart(2, "0");
   return `${day}, ${dayOfMonth} ${month} ${year} ${hours}:${minutes}:${seconds} GMT`;
+}
+
+function validateDate(date) {
+  if (date === undefined || date === null) {
+    return;
+  }
+  const parsedDate = typeof date === "string" ? new Date(date) : date;
+  if (!(parsedDate instanceof Date) || Number.isNaN(parsedDate.getTime())) {
+    throw new Error(`Invalid date_published: ${String(date)}`);
+  }
 }
 
 function validateXmlCharacters(text) {
