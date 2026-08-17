@@ -70,4 +70,24 @@ describe("jsonFeedToRss", () => {
       /<guid>http:\/\/example\.com\/item\?id=1&amp;sort=asc<\/guid>/,
     );
   });
+
+  test("splits CDATA sections around content_html CDATA terminators", () => {
+    const jsonFeed = {
+      title: "Test Feed",
+      items: [
+        {
+          id: "1",
+          content_html: "<p>alpha ]]> omega</p>",
+          title: "Test Item",
+        },
+      ],
+    };
+
+    const result = jsonFeedToRss(jsonFeed);
+
+    assert.match(
+      result,
+      /<content:encoded><!\[CDATA\[<p>alpha \]\]\]\]><!\[CDATA\[> omega<\/p>\]\]><\/content:encoded>/,
+    );
+  });
 });

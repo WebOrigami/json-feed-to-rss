@@ -62,7 +62,9 @@ function itemRss(jsonFeedItem) {
     ? `      <description>${escapeXml(summary)}</description>\n`
     : "";
   const contentElement = content_html
-    ? `      <content:encoded><![CDATA[${content_html}]]></content:encoded>\n`
+    ? `      <content:encoded><![CDATA[${escapeCdata(
+        content_html,
+      )}]]></content:encoded>\n`
     : "";
   const titleElement = title
     ? `      <title>${escapeXml(title)}</title>\n`
@@ -82,6 +84,10 @@ function escapeXml(text) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+function escapeCdata(text) {
+  return text.replace(/]]>/g, "]]]]><![CDATA[>");
 }
 
 // RSS wants dates in RFC-822.
