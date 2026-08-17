@@ -39,4 +39,35 @@ describe("jsonFeedToRss", () => {
 </rss>`;
     assert.equal(result, expectedRSS);
   });
+
+  test("escapes URLs and IDs for XML", () => {
+    const jsonFeed = {
+      title: "Test Feed",
+      home_page_url: "http://example.com/?a=1&b=2",
+      feed_url: "http://example.com/feed.json?a=1&b=2",
+      items: [
+        {
+          id: "http://example.com/item?id=1&sort=asc",
+          url: "http://example.com/item?id=1&sort=asc",
+          title: "Test Item",
+        },
+      ],
+    };
+
+    const result = jsonFeedToRss(jsonFeed);
+
+    assert.match(result, /<link>http:\/\/example\.com\/\?a=1&amp;b=2<\/link>/);
+    assert.match(
+      result,
+      /<atom:link href="http:\/\/example\.com\/feed\.json\?a=1&amp;b=2"/,
+    );
+    assert.match(
+      result,
+      /<link>http:\/\/example\.com\/item\?id=1&amp;sort=asc<\/link>/,
+    );
+    assert.match(
+      result,
+      /<guid>http:\/\/example\.com\/item\?id=1&amp;sort=asc<\/guid>/,
+    );
+  });
 });

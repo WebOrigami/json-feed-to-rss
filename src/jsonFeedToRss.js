@@ -24,12 +24,14 @@ export default function jsonFeedToRss(jsonFeed, options = {}) {
     ? `    <description>${escapeXml(description)}</description>\n`
     : "";
   const linkElement = home_page_url
-    ? `    <link>${home_page_url}</link>\n`
+    ? `    <link>${escapeXml(home_page_url)}</link>\n`
     : "";
   const languageElement = language
     ? `    <language>${language}</language>\n`
     : "";
-  const feedLinkElement = `    <atom:link href="${feed_url}" rel="self" type="application/rss+xml"/>\n`;
+  const feedLinkElement = `    <atom:link href="${
+    feed_url ? escapeXml(feed_url) : feed_url
+  }" rel="self" type="application/rss+xml"/>\n`;
 
   return `<?xml version="1.0" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
@@ -53,7 +55,9 @@ function itemRss(jsonFeedItem) {
   const dateElement = date ? `      <pubDate>${date}</pubDate>\n` : "";
   const isPermaLink =
     id !== undefined && !URL.canParse(id) ? ` isPermaLink="false"` : "";
-  const guidElement = id ? `      <guid${isPermaLink}>${id}</guid>\n` : "";
+  const guidElement = id
+    ? `      <guid${isPermaLink}>${escapeXml(id)}</guid>\n`
+    : "";
   const descriptionElement = summary
     ? `      <description>${escapeXml(summary)}</description>\n`
     : "";
@@ -63,7 +67,7 @@ function itemRss(jsonFeedItem) {
   const titleElement = title
     ? `      <title>${escapeXml(title)}</title>\n`
     : "";
-  const linkElement = url ? `      <link>${url}</link>\n` : "";
+  const linkElement = url ? `      <link>${escapeXml(url)}</link>\n` : "";
 
   return `    <item>
 ${dateElement}${titleElement}${linkElement}${guidElement}${descriptionElement}${contentElement}    </item>
