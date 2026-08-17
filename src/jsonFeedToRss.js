@@ -17,6 +17,12 @@ export default function jsonFeedToRss(jsonFeed, options = {}) {
     }
   }
 
+  validateXmlCharacters(description);
+  validateXmlCharacters(home_page_url);
+  validateXmlCharacters(title);
+  validateXmlCharacters(feed_url);
+  validateXmlCharacters(language);
+
   const itemsRss = items?.map((story) => itemRss(story)).join("") ?? [];
 
   const titleElement = title ? `    <title>${escapeXml(title)}</title>\n` : "";
@@ -27,7 +33,7 @@ export default function jsonFeedToRss(jsonFeed, options = {}) {
     ? `    <link>${escapeXml(home_page_url)}</link>\n`
     : "";
   const languageElement = language
-    ? `    <language>${language}</language>\n`
+    ? `    <language>${escapeXml(language)}</language>\n`
     : "";
   const feedLinkElement = `    <atom:link href="${
     feed_url ? escapeXml(feed_url) : feed_url
@@ -41,8 +47,15 @@ ${titleElement}${descriptionElement}${linkElement}${languageElement}${feedLinkEl
 }
 
 function itemRss(jsonFeedItem) {
-  const { content_html, id, summary, title, url } = jsonFeedItem;
-  let { date_published } = jsonFeedItem;
+  const { content_html, date_published, id, summary, title, url } =
+    jsonFeedItem;
+  validateXmlCharacters(content_html);
+  validateXmlCharacters(id);
+  validateXmlCharacters(summary);
+  validateXmlCharacters(title);
+  validateXmlCharacters(url);
+  validateXmlCharacters(date_published);
+
   if (typeof date_published === "string") {
     // Parse as ISO 8601 date.
     date_published = new Date(date_published);
@@ -115,4 +128,24 @@ function toRFC822Date(date) {
   const minutes = date.getUTCMinutes().toString().padStart(2, "0");
   const seconds = date.getUTCSeconds().toString().padStart(2, "0");
   return `${day}, ${dayOfMonth} ${month} ${year} ${hours}:${minutes}:${seconds} GMT`;
+}
+
+function validateXmlCharacters(text) {
+  if (typeof text !== "string") {
+    return;
+  }
+  const invalidCharacter = text.match(
+    /[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}]/u,
+  )?.[0];
+  if (invalidCharacter) {
+    const codePoint = invalidCharacter
+      .codePointAt(0)
+      .toString(16)
+      .toUpperCase()
+      .padStart(4, "0");
+    throw new Error(
+      `Input contains a character that is invalid in XML 1.0 (U+${codePoint}).`,
+    );
+  }
+  return text;
 }

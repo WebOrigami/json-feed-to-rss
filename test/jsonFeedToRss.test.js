@@ -3,6 +3,23 @@ import { describe, test } from "node:test";
 import jsonFeedToRss from "../src/jsonFeedToRss.js";
 
 describe("jsonFeedToRss", () => {
+  test("throws for XML-invalid characters", () => {
+    const jsonFeed = {
+      title: "Test\u000B Feed",
+      items: [
+        {
+          id: "1",
+          content_html: "<p>Test\u000B content</p>",
+          title: "Test Item",
+        },
+      ],
+    };
+
+    assert.throws(() => jsonFeedToRss(jsonFeed), {
+      message: /XML 1\.0.*U\+000B/,
+    });
+  });
+
   test("converts a simple JSON Feed entry with one item to RSS format", async () => {
     const jsonFeed = {
       title: "Test Feed",
@@ -69,6 +86,15 @@ describe("jsonFeedToRss", () => {
       result,
       /<guid>http:\/\/example\.com\/item\?id=1&amp;sort=asc<\/guid>/,
     );
+  });
+
+  test("escapes language for XML", () => {
+    const result = jsonFeedToRss(
+      { title: "Test Feed", items: [] },
+      { language: "en&us" },
+    );
+
+    assert.match(result, /<language>en&amp;us<\/language>/);
   });
 
   test("splits CDATA sections around content_html CDATA terminators", () => {
