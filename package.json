@@ -2,5 +2,8 @@
   "name": "@weborigami/json-feed-to-rss",
   "version": "1.0.1",
   "type": "module",
-  "main": "src/jsonFeedToRss.js"
+  "main": "src/jsonFeedToRss.js",
+  "scripts": {
+    "test": "node --test --test-reporter=spec"
+  }
 }

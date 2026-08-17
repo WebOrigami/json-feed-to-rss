@@ -13,7 +13,6 @@ describe("jsonFeedToRss", () => {
         {
           id: "1",
           content_html: "This is an <strong>item</strong>.",
-          external_url: "http://external.com/original-item",
           url: "http://example.com/item",
           title: "Test of <strong>item</strong>",
         },
@@ -34,7 +33,6 @@ describe("jsonFeedToRss", () => {
       <title>Test of &lt;strong&gt;item&lt;/strong&gt;</title>
       <link>http://example.com/item</link>
       <guid isPermaLink="false">1</guid>
-      <source url="http://external.com/original-item"></source>
       <content:encoded><![CDATA[This is an <strong>item</strong>.]]></content:encoded>
     </item>
   </channel>
